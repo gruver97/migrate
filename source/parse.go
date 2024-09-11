@@ -26,15 +26,15 @@ var Regex = regexp.MustCompile(`^(([VUB])([0-9]+)|(R))__(.*)\.(up|down)\.(.*)$`)
 // Parse returns Migration for matching Regex pattern.
 func Parse(raw string) (*Migration, error) {
 	m := Regex.FindStringSubmatch(raw)
-	if len(m) == 6 {
-		versionUint64, err := strconv.ParseUint(m[2], 10, 64)
+	if len(m) == 8 {
+		versionUint64, err := strconv.ParseUint(m[3], 10, 64)
 		if err != nil {
 			return nil, err
 		}
 		return &Migration{
 			Version:    uint(versionUint64),
-			Identifier: m[2],
-			Direction:  Direction(m[3]),
+			Identifier: m[5],
+			Direction:  Direction(m[6]),
 			Raw:        raw,
 		}, nil
 	}
