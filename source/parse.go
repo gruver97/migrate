@@ -21,13 +21,13 @@ var (
 //	123_name.down.ext
 //
 // ^(((V|U|B)[0-9]+)|(R))__(.*)\.(up|down)\.(.*)$
-var Regex = regexp.MustCompile(`^((([VUB])[0-9]+)|(R))__(.*)\.(up|down)\.(.*)$`)
+var Regex = regexp.MustCompile(`^(([VUB])([0-9]+)|(R))__(.*)\.(up|down)\.(.*)$`)
 
 // Parse returns Migration for matching Regex pattern.
 func Parse(raw string) (*Migration, error) {
 	m := Regex.FindStringSubmatch(raw)
-	if len(m) == 5 {
-		versionUint64, err := strconv.ParseUint(m[1], 10, 64)
+	if len(m) == 6 {
+		versionUint64, err := strconv.ParseUint(m[2], 10, 64)
 		if err != nil {
 			return nil, err
 		}
