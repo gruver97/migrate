@@ -16,9 +16,9 @@ import (
 
 	"go.uber.org/atomic"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/multistmt"
+	"github.com/gruver97/migrate/v4"
+	"github.com/gruver97/migrate/v4/database"
+	"github.com/gruver97/migrate/v4/database/multistmt"
 	"github.com/hashicorp/go-multierror"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -282,7 +282,7 @@ func (p *Postgres) applyAdvisoryLock() error {
 	}
 
 	// This will wait indefinitely until the lock can be acquired.
-	query := `SELECT pg_advisory_lock($1)`
+	query := `SELECT PG_ADVISORY_LOCK($1)`
 	if _, err := p.conn.ExecContext(context.Background(), query, aid); err != nil {
 		return &database.Error{OrigErr: err, Err: "try lock failed", Query: []byte(query)}
 	}
@@ -338,7 +338,7 @@ func (p *Postgres) releaseAdvisoryLock() error {
 		return err
 	}
 
-	query := `SELECT pg_advisory_unlock($1)`
+	query := `SELECT PG_ADVISORY_UNLOCK($1)`
 	if _, err := p.conn.ExecContext(context.Background(), query, aid); err != nil {
 		return &database.Error{OrigErr: err, Query: []byte(query)}
 	}
@@ -503,7 +503,7 @@ func (p *Postgres) Version() (version int, dirty bool, err error) {
 
 func (p *Postgres) Drop() (err error) {
 	// select all tables in current schema
-	query := `SELECT table_name FROM information_schema.tables WHERE table_schema=(SELECT current_schema()) AND table_type='BASE TABLE'`
+	query := `SELECT table_name FROM information_schema.tables WHERE table_schema=(SELECT CURRENT_SCHEMA()) AND table_type='BASE TABLE'`
 	tables, err := p.conn.QueryContext(context.Background(), query)
 	if err != nil {
 		return &database.Error{OrigErr: err, Query: []byte(query)}
@@ -597,7 +597,7 @@ func (p *Postgres) ensureLockTable() error {
 	}
 
 	var count int
-	query := `SELECT COUNT(1) FROM information_schema.tables WHERE table_name = $1 AND table_schema = (SELECT current_schema()) LIMIT 1`
+	query := `SELECT COUNT(1) FROM information_schema.tables WHERE table_name = $1 AND table_schema = (SELECT CURRENT_SCHEMA()) LIMIT 1`
 	if err := p.db.QueryRow(query, p.config.LockTable).Scan(&count); err != nil {
 		return &database.Error{OrigErr: err, Query: []byte(query)}
 	}

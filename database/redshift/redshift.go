@@ -14,8 +14,8 @@ import (
 
 	"go.uber.org/atomic"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/gruver97/migrate/v4"
+	"github.com/gruver97/migrate/v4/database"
 	"github.com/hashicorp/go-multierror"
 	"github.com/lib/pq"
 )
@@ -265,7 +265,7 @@ func (p *Redshift) Version() (version int, dirty bool, err error) {
 
 func (p *Redshift) Drop() (err error) {
 	// select all tables in current schema
-	query := `SELECT table_name FROM information_schema.tables WHERE table_schema=(SELECT current_schema()) AND table_type='BASE TABLE'`
+	query := `SELECT table_name FROM information_schema.tables WHERE table_schema=(SELECT CURRENT_SCHEMA()) AND table_type='BASE TABLE'`
 	tables, err := p.conn.QueryContext(context.Background(), query)
 	if err != nil {
 		return &database.Error{OrigErr: err, Query: []byte(query)}
@@ -324,7 +324,7 @@ func (p *Redshift) ensureVersionTable() (err error) {
 
 	// check if migration table exists
 	var count int
-	query := `SELECT COUNT(1) FROM information_schema.tables WHERE table_name = $1 AND table_schema = (SELECT current_schema()) LIMIT 1`
+	query := `SELECT COUNT(1) FROM information_schema.tables WHERE table_name = $1 AND table_schema = (SELECT CURRENT_SCHEMA()) LIMIT 1`
 	if err := p.conn.QueryRowContext(context.Background(), query, p.config.MigrationsTable).Scan(&count); err != nil {
 		return &database.Error{OrigErr: err, Query: []byte(query)}
 	}

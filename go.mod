@@ -1,4 +1,4 @@
-module github.com/golang-migrate/migrate/v4
+module  github.com/gruver97/migrate/v4
 
 go 1.22.0
 

@@ -19,7 +19,9 @@ var (
 //
 //	123_name.up.ext
 //	123_name.down.ext
-var Regex = regexp.MustCompile(`^([0-9]+)_(.*)\.(` + string(Down) + `|` + string(Up) + `)\.(.*)$`)
+//
+// ^(((V|U|B)[0-9]+)|(R))__(.*)\.(up|down)\.(.*)$
+var Regex = regexp.MustCompile(`^((([VUB])[0-9]+)|(R))__(.*)\.(up|down)\.(.*)$`)
 
 // Parse returns Migration for matching Regex pattern.
 func Parse(raw string) (*Migration, error) {
